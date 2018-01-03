@@ -1,35 +1,36 @@
 package com.codingvalhalla.meredith.evidence.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
  * @author Meredith
  */
-public class TV_Show  implements java.io.Serializable {
+public class TV_Show implements java.io.Serializable {
 
-    private static final long serialVersionUID = 6680195713251243848L;
+    private static final long serialVersionUID = 5207101937016083734L;
 
     private String name;
     private RatingMPAA ratingMPAA;
     private String comments;
     private int stars;
-    private ObservableList<Season> seasons;
+    private List<Season> seasons;
+
     private boolean watching;
 
-    public TV_Show(String name, int stars,RatingMPAA ratingMPAA, boolean watching, String comments) {
+    public TV_Show(String name, int stars, RatingMPAA ratingMPAA, boolean watching, String comments) {
         this.name = name;
         this.ratingMPAA = ratingMPAA;
         this.comments = comments;
         this.stars = stars;
-        this.seasons = FXCollections.observableArrayList();
         this.watching = watching;
+        this.seasons = new ArrayList<>();
     }
 
-    public int getSeasonsNumber() {
-        return seasons.size();
+    public List<Season> getSeasons() {
+        return seasons;
     }
 
     public String getName() {
@@ -79,7 +80,7 @@ public class TV_Show  implements java.io.Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, ratingMPAA, stars, comments, seasons, watching);
+        return Objects.hash(name, ratingMPAA, stars, seasons, comments, watching);
     }
 
     @Override
@@ -109,6 +110,7 @@ public class TV_Show  implements java.io.Serializable {
         if (!Objects.equals(this.seasons, other.seasons)) {
             return false;
         }
+
         if (!Objects.equals(this.watching, other.watching)) {
             return false;
         }

@@ -1,7 +1,7 @@
 package com.codingvalhalla.meredith.evidence.gui;
 
+import com.codingvalhalla.meredith.evidence.model.Episode;
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
-import com.codingvalhalla.meredith.evidence.model.TV_Show;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +36,7 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class AddDialogTVShow extends Dialog<TV_Show> {
+public class AddDialogTVEpisode extends Dialog<Episode> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
@@ -48,7 +48,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private TV_Show result;
+    private Episode result;
 
     private TextField name;
     private ComboBox<RatingMPAA> rating;
@@ -65,7 +65,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public AddDialogTVShow() {
+    public AddDialogTVEpisode() {
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -190,7 +190,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            result = new TV_Show(name.getText(), (int) stars.getValue() - 1, rating.getSelectionModel().getSelectedItem(), false, comment.getText());
+            result = new Episode(name.getText(), (int) stars.getValue() - 1, false, comment.getText());
             setResult(result);
         }
 

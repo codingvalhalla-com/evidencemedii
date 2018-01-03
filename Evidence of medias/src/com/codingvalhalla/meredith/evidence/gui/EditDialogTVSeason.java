@@ -1,7 +1,7 @@
 package com.codingvalhalla.meredith.evidence.gui;
 
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
-import com.codingvalhalla.meredith.evidence.model.TV_Show;
+import com.codingvalhalla.meredith.evidence.model.Season;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -36,7 +37,7 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class AddDialogTVShow extends Dialog<TV_Show> {
+public class EditDialogTVSeason extends Dialog<Season> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
@@ -48,7 +49,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private TV_Show result;
+    private Season selectedItem;
 
     private TextField name;
     private ComboBox<RatingMPAA> rating;
@@ -59,13 +60,16 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     private Label starsLabel;
     private Pane starsThumb;
 
+    private CheckBox watching;
+
     private Button buttonOK;
     private Button buttonCancel;
 
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public AddDialogTVShow() {
+    public EditDialogTVSeason(Season selectedItem) {
+        this.selectedItem = selectedItem;
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -80,6 +84,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         initProperties();
         addToLayout();
         initListers();
+        addValues();
     }
 
     public void afterShow() {
@@ -94,7 +99,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         this.rootLayout = new BorderPane();
         this.rootGrid = new GridPane();
         this.dialogScene = new Scene(rootLayout, 200, 400);
-        this.buttonOK = new Button("Save");
+        this.buttonOK = new Button("OK");
         this.buttonCancel = new Button("Cancel");
         this.name = new TextField();
         this.rating = new ComboBox<>(ratingList);
@@ -103,6 +108,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         this.starsImage = new ImageView(new Image(GraphicUserInterface.getResources() + "images/stars0.png", 110, 20, false, true));
         this.starsLabel = new Label();
         this.starsImageGroup = new Pane(starsImage, stars);
+        this.watching = new CheckBox();
 
     }
 
@@ -169,15 +175,18 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         rootGrid.addRow(0, new Label("Name:"), name);
         rootGrid.addRow(1, new Label("Rating MPAA:"), rating);
         rootGrid.addRow(2, new Label("Rating:"), starsImageGroup);
-        rootGrid.addRow(3, new Label("Comment:"), comment);
+        rootGrid.addRow(3, new Label("Watching:"), watching);
+        rootGrid.addRow(4, new Label("Comment:"), comment);
+
     }
 
     private boolean isValid() {
         String errorMessage = "";
 
         if (name.getText() == null || name.getText().length() == 0) {
-            errorMessage += "Enter valid name.\n";
+            errorMessage += "Not valid name.\n";
         }
+
         if (errorMessage.length() == 0) {
             return true;
         } else {
@@ -190,8 +199,11 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            result = new TV_Show(name.getText(), (int) stars.getValue() - 1, rating.getSelectionModel().getSelectedItem(), false, comment.getText());
-            setResult(result);
+            selectedItem.setName(name.getText());
+            selectedItem.setStars((int) stars.getValue() - 1);
+//            selectedItem.setComment(comment.getText());
+            selectedItem.setWatching(watching.isSelected());
+            setResult(selectedItem);
         }
 
     };
@@ -210,6 +222,14 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         starsLabel.textProperty().set("");
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
+    }
+
+    private void addValues() {
+        name.setText(selectedItem.getName());
+        stars.setValue(selectedItem.getStars());
+//        comment.setText(selectedItem.getComments());
+        watching.setSelected(selectedItem.isWatching());
+
     }
 
 }

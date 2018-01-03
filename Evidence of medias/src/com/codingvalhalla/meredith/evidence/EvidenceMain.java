@@ -25,6 +25,7 @@ public class EvidenceMain extends Application {
         }
         gui.restore();
         gui.setStarted(true);
+        gui.afterStarted();
     }
 
     public static void main(String[] args) {
