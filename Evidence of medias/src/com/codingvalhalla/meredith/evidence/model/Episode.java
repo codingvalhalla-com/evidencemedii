@@ -8,18 +8,27 @@ import java.util.Objects;
  */
 public class Episode implements java.io.Serializable {
 
-    private static final long serialVersionUID = 6107485503623428828L;
+    private static final long serialVersionUID = 4131847251103174308L;
 
     private String name;
     private int stars;
-    private String comments;
+    private RatingMPAA ratingMPAA;
     private boolean watching;
+    private String comment;
 
     public Episode(String name, int stars, boolean watching, String comments) {
         this.name = name;
         this.stars = stars;
         this.watching = watching;
-        this.comments = comments;
+        this.comment = comments;
+    }
+
+    public void setRatingMPAA(RatingMPAA ratingMPAA) {
+        this.ratingMPAA = ratingMPAA;
+    }
+
+    public RatingMPAA getRatingMPAA() {
+        return ratingMPAA;
     }
 
     public String getName() {
@@ -38,14 +47,6 @@ public class Episode implements java.io.Serializable {
         this.stars = stars;
     }
 
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
     public boolean isWatching() {
         return watching;
     }
@@ -54,9 +55,17 @@ public class Episode implements java.io.Serializable {
         this.watching = watching;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(name, stars, comments, watching);
+        return Objects.hash(name, stars, ratingMPAA, watching);
     }
 
     @Override
@@ -74,10 +83,10 @@ public class Episode implements java.io.Serializable {
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
-        if (!Objects.equals(this.stars, other.stars)) {
+        if (!Objects.equals(this.ratingMPAA, other.ratingMPAA)) {
             return false;
         }
-        if (!Objects.equals(this.comments, other.comments)) {
+        if (!Objects.equals(this.stars, other.stars)) {
             return false;
         }
         if (!Objects.equals(this.watching, other.watching)) {

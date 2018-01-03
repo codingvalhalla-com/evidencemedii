@@ -1,8 +1,8 @@
 package com.codingvalhalla.meredith.evidence.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 /**
  *
@@ -10,26 +10,34 @@ import javafx.collections.ObservableList;
  */
 public class Season implements java.io.Serializable {
 
-    private static final long serialVersionUID = 9113784715691496880L;
+    private static final long serialVersionUID = 4856384869611178224L;
 
     private String name;
     private int stars;
-    private ObservableList<Episode> episodes;
+    private RatingMPAA ratingMPAA;
+    private List<Episode> episodes;
     private boolean watching;
-    private String comments;
 
-    public Season(String name, int episodesNumber, int stars, boolean watching, String comments) {
+    public Season(String name, int stars, boolean watching, String comments) {
         this.name = name;
-        this.episodes =  FXCollections.observableArrayList();
         this.stars = stars;
         this.watching = watching;
-        this.comments = comments;
+        this.episodes = new ArrayList<>();
+
     }
 
-      public int getEpisodesNumber() {
-        return episodes.size();
+    public void setRatingMPAA(RatingMPAA ratingMPAA) {
+        this.ratingMPAA = ratingMPAA;
     }
-    
+
+    public RatingMPAA getRatingMPAA() {
+        return ratingMPAA;
+    }
+
+    public List<Episode> getEpisodes() {
+        return episodes;
+    }
+
     public String getName() {
         return name;
     }
@@ -54,18 +62,9 @@ public class Season implements java.io.Serializable {
         this.watching = watching;
     }
 
-    public String getComments() {
-        return comments;
-    }
-
-    public void setComments(String comments) {
-        this.comments = comments;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(name, episodes, stars, comments, watching);
-
+        return Objects.hash(name, stars, ratingMPAA, episodes, watching);
     }
 
     @Override
@@ -83,10 +82,10 @@ public class Season implements java.io.Serializable {
         if (!Objects.equals(this.name, other.name)) {
             return false;
         }
-        if (!Objects.equals(this.stars, other.stars)) {
+        if (!Objects.equals(this.ratingMPAA, other.ratingMPAA)) {
             return false;
         }
-        if (!Objects.equals(this.comments, other.comments)) {
+        if (!Objects.equals(this.stars, other.stars)) {
             return false;
         }
         if (!Objects.equals(this.episodes, other.episodes)) {

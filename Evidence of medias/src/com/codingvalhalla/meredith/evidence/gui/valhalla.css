@@ -36,3 +36,46 @@
 .add-dialog .slider .track,.edit-dialog .slider .track{
     -fx-background-color:transparent;
 }
+.tab-pane{
+    -fx-tab-min-height: 1.5em;
+    -fx-tab-max-height: 1.5em;
+
+    -fx-tab-min-width:10em;
+    -fx-tab-max-width:15em;
+
+    -fx-padding: 0 -1 -1 0;
+
+}
+
+.tab-pane .tab-header-area {
+    -fx-padding: 0 0 0 5;
+}
+
+.tab-pane > .tab-header-area > .headers-region > .tab{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0, 0 5 0 0, 1 6 0 0 ;
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-insets: 0;
+    -fx-border-width: 0 0 5 0;
+    -fx-border-color: transparent;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+}
+.tab-pane > .tab-header-area > .headers-region >.tab:selected{
+    -fx-backgroud-color: #ffffff;
+    -fx-border-width: 0 0 5 0;
+    -fx-border-color: linear-gradient(#7db6e8 0%, #4f9be3 25%, #338fe6 75%, #0b73da 100%);
+}
+.tab-pane > .tab-header-area > .headers-region >.tab:selected .focus-indicator{
+    -fx-border-width: 0;  
+}
+.tab-pane *.tab-header-background{
+    -fx-background-color: transparent;
+}
+.tab-pane > .tab-header-area > .headers-region > .tab .tab-label{
+    -fx-background-color: transparent;
+    -fx-alignment: CENTER;
+    -fx-text-fill: black;
+    -fx-border-color:transparent;
+}

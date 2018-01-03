@@ -5,10 +5,6 @@ import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-/**
- *
- * @author st52506
- */
 public class EvidenceMain extends Application {
 
     private Stage mainStage;
@@ -25,6 +21,7 @@ public class EvidenceMain extends Application {
         }
         gui.restore();
         gui.setStarted(true);
+        gui.afterStarted();
     }
 
     public static void main(String[] args) {

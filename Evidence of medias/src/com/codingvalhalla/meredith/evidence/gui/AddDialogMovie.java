@@ -208,7 +208,7 @@ public class AddDialogMovie extends Dialog<Movie> {
             starsImage.setImage(new Image(GraphicUserInterface.getResources() + "images/stars" + value + ".png", 110, 20, false, true));
             stars.setValue(Math.round(newValue.doubleValue()));
         });
-        starsLabel.textProperty().set("|");
+        starsLabel.textProperty().set("");
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
     }
