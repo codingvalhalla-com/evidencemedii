@@ -55,11 +55,9 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-
-
 public class GraphicUserInterface {
 
-    private final String title = "Evidence medii - JavaFX";
+    private final String title = "Media records - JavaFX";
     private final static String RESOURCES = EvidenceMain.class.getResource("resources/").toExternalForm();
 
     private BorderPane rootLayout;
@@ -249,12 +247,14 @@ public class GraphicUserInterface {
         textAreaM.setEditable(false);
         textAreaM.prefWidth(200);
         textAreaM.prefHeightProperty().bind(movieList.heightProperty().add(-25));
+        textAreaM.setWrapText(true);
         rightStageVBoxM.getChildren().addAll(labelM, textAreaM);
 
         rightStageVBoxT = new VBox();
         rightStageVBoxT.setPrefWidth(200);
         textAreaT = new TextArea();
         textAreaT.setEditable(false);
+        textAreaT.setWrapText(true);
         Label labelT = new Label("More informations");
         labelT.setPrefSize(200, 25);
         labelT.setStyle("-fx-font-weight:bold;" + "-fx-alignment:center;" + "-fx-text-alignment:center");
@@ -873,12 +873,7 @@ public class GraphicUserInterface {
         });
 
         movieList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends Movie> observable, Movie oldValue, Movie newValue) -> {
-            if (newValue != null) {
-                textAreaM.setText(newValue.getComments());
-            } else {
-                textAreaM.setText("");
-            }
-
+            updateMovieComment(newValue);
         });
         movieList.setOnMouseClicked((event) -> {
             if (event.getClickCount() == 2) {
@@ -1023,6 +1018,7 @@ public class GraphicUserInterface {
             saved = false;
             movieList.refresh();
         });
+        updateMovieComment(movieList.getSelectionModel().getSelectedItem());
     };
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -1102,10 +1098,6 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerSaveButton = (ActionEvent event) -> {
-        if (tvShowPane.getTabs().size() > 1) {
-
-        }
-
         FileOutputStream fileOut = null;
         ObjectOutputStream out = null;
         try {
@@ -1125,6 +1117,9 @@ public class GraphicUserInterface {
             }
             saved = true;
             out.writeBoolean(saved);
+            if (tvShowPane.getTabs().size() != 1) {
+                closeTabSeason();
+            }
         } catch (IOException ex) {
             StaticAlerts.exceptionDialog(ex, ex.getLocalizedMessage(), mainStage);
         } finally {
@@ -1145,6 +1140,7 @@ public class GraphicUserInterface {
     private EventHandler<ActionEvent> handlerRestoreButton = (ActionEvent event) -> {
         FileInputStream fileIn = null;
         ObjectInputStream in = null;
+
         try {
             fileIn = new FileInputStream("backup.bin");
             in = new ObjectInputStream(fileIn);
@@ -1163,10 +1159,14 @@ public class GraphicUserInterface {
             }
             tvShowList.refresh();
             saved = in.readBoolean();
+            if (tvShowPane.getTabs().size() != 1) {
+                closeTabSeason();
+            }
         } catch (IOException | ClassNotFoundException ex) {
             if (started) {
                 StaticAlerts.exceptionDialog(ex, ex.getLocalizedMessage(), mainStage);
             }
+
         } finally {
             try {
                 if (in != null) {
@@ -1183,5 +1183,13 @@ public class GraphicUserInterface {
 
     public void afterStarted() {
 //TODO JUST IN CASE
+    }
+
+    private void updateMovieComment(Movie movie) {
+        if (movie != null) {
+            textAreaM.setText(movie.getComments());
+        } else {
+            textAreaM.setText("");
+        }
     }
 }

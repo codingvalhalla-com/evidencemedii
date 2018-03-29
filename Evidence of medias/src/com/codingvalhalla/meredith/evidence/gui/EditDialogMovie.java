@@ -140,6 +140,7 @@ public class EditDialogMovie extends Dialog<Movie> {
         name.setPrefWidth(200);
         comment.setPromptText("Enter your comment.");
         comment.setPrefSize(200, 150);
+        comment.setWrapText(true);
 
         rating.getSelectionModel().selectFirst();
         rating.setPrefWidth(200);
