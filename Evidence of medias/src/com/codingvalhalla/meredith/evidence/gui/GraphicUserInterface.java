@@ -349,30 +349,25 @@ public class GraphicUserInterface {
         tvEpisodesBox.getChildren().addAll(tvEpisodeAddButton, tvEpisodeEditButton, tvEpisodeRemoveButton);
 
         for (int i = 0; i < topBox.getChildren().size(); i++) {
-            Button temp = new Button();
-            temp = (Button) topBox.getChildren().get(i);
+            Button temp = (Button) topBox.getChildren().get(i);
             temp.setPrefWidth(buttonWidth);
         }
         for (int i = 0; i < movieBox.getChildren().size(); i++) {
-            Button temp = new Button();
-            temp = (Button) movieBox.getChildren().get(i);
+            Button temp = (Button) movieBox.getChildren().get(i);
             temp.setPrefWidth(buttonWidth);
         }
         for (int i = 0; i < tvShowBox.getChildren().size(); i++) {
-            Button temp = new Button();
-            temp = (Button) tvShowBox.getChildren().get(i);
+            Button temp = (Button) tvShowBox.getChildren().get(i);
             temp.setPrefWidth(buttonWidth);
         }
 
         for (int i = 0; i < tvSeasonBox.getChildren().size(); i++) {
-            Button temp = new Button();
-            temp = (Button) tvSeasonBox.getChildren().get(i);
+            Button temp = (Button) tvSeasonBox.getChildren().get(i);
             temp.setPrefWidth(buttonWidth);
         }
 
         for (int i = 0; i < tvEpisodesBox.getChildren().size(); i++) {
-            Button temp = new Button();
-            temp = (Button) tvEpisodesBox.getChildren().get(i);
+            Button temp = (Button) tvEpisodesBox.getChildren().get(i);
             temp.setPrefWidth(buttonWidth);
         }
         botBox.getChildren().addAll(movieBox, tvShowBox, tvSeasonBox, tvEpisodesBox);
