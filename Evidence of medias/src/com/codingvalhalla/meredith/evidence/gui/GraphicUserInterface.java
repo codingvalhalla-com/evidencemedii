@@ -978,7 +978,11 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonAddButton = (ActionEvent event) -> {
+<<<<<<< HEAD
         Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false);
+=======
+        Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false, "");
+>>>>>>> 91f6490d2db14562c02329f69b0c052d0f440e09
         result.setRatingMPAA(currentTV_Show.getRatingMPAA());
         currentTV_Show.getSeasons().add(result);
         tvSeasonList.getItems().clear();
