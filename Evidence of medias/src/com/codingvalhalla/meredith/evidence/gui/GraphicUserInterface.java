@@ -936,7 +936,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVShowAddButton = (ActionEvent event) -> {
-        AddDialogTVShow add = new AddDialogTVShow();
+        DialogTVShow add = new DialogTVShow();
         add.setTitle("Add TV show");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -957,7 +957,7 @@ public class GraphicUserInterface {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVShowEditButton = (ActionEvent event) -> {
         TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
-        EditDialogTVShow edit = new EditDialogTVShow(x);
+        DialogTVShow edit = new DialogTVShow(x);
         edit.setTitle("Edit TV show");
         DialogPane dialogPane = edit.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -980,7 +980,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerMovieAddButton = (ActionEvent event) -> {
-        AddDialogMovie add = new AddDialogMovie();
+        DialogMovie add = new DialogMovie();
         add.setTitle("Add movie");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -1002,7 +1002,7 @@ public class GraphicUserInterface {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerMovieEditButton = (ActionEvent event) -> {
         Movie x = movieList.getSelectionModel().getSelectedItem();
-        EditDialogMovie edit = new EditDialogMovie(x);
+        DialogMovie edit = new DialogMovie(x);
         edit.setTitle("Edit movie");
         DialogPane dialogPane = edit.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -1027,6 +1027,7 @@ public class GraphicUserInterface {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonAddButton = (ActionEvent event) -> {
         Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false, "");
+        result.setRatingMPAA(currentTV_Show.getRatingMPAA());
         currentTV_Show.getSeasons().add(result);
         tvSeasonList.getItems().clear();
         tvSeasonList.getItems().addAll(currentTV_Show.getSeasons());
@@ -1055,7 +1056,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVEpisodeAddButton = (ActionEvent event) -> {
-        AddDialogTVEpisode add = new AddDialogTVEpisode();
+        DialogTVEpisode add = new DialogTVEpisode();
         add.setTitle("Add episode");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -1064,7 +1065,9 @@ public class GraphicUserInterface {
         add.afterShow();
         add.resultProperty().addListener((observable, oldValue, newValue) -> {
             try {
+                newValue.setRatingMPAA(currentSeason.getRatingMPAA());
                 currentSeason.getEpisodes().add(newValue);
+
                 saved = false;
                 tvEpisodeList.getItems().clear();
                 tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
@@ -1077,8 +1080,27 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVEpisodeEditButton = (ActionEvent event) -> {
-        //TODO
-        StaticAlerts.infoMessage("Not implemented yet", "This functions is not implemented yet");
+        Episode x = tvEpisodeList.getSelectionModel().getSelectedItem();
+        DialogTVEpisode edit = new DialogTVEpisode();
+        edit.setTitle("Edit episode");
+        DialogPane dialogPane = edit.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
+        dialogPane.getStyleClass().add("add-dialog");
+        edit.show();
+        edit.afterShow();
+        edit.resultProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                newValue.setRatingMPAA(currentSeason.getRatingMPAA());
+                currentSeason.getEpisodes().add(newValue);
+
+                saved = false;
+                tvEpisodeList.getItems().clear();
+                tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
+                tvEpisodeList.refresh();
+            } catch (Exception e) {
+                StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
+            }
+        });
     };
 
     @SuppressWarnings("FieldMayBeFinal")

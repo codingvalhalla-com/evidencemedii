@@ -37,7 +37,7 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class EditDialogTVShow extends Dialog<TV_Show> {
+public class DialogTVShow extends Dialog<TV_Show> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
@@ -49,7 +49,7 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private TV_Show selectedItem;
+    private TV_Show tvShow;
 
     private TextField name;
     private ComboBox<RatingMPAA> rating;
@@ -59,7 +59,6 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
     private Pane starsImageGroup;
     private Label starsLabel;
     private Pane starsThumb;
-
     private CheckBox watching;
 
     private Button buttonOK;
@@ -68,8 +67,12 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public EditDialogTVShow(TV_Show selectedItem) {
-        this.selectedItem = selectedItem;
+    public DialogTVShow() {
+        this(new TV_Show("", 0, RatingMPAA.G, false, ""));
+    }
+
+    public DialogTVShow(TV_Show selectedItem) {
+        this.tvShow = selectedItem;
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -87,6 +90,15 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
         addValues();
     }
 
+    private void addValues() {
+        name.setText(tvShow.getName());
+        rating.getSelectionModel().select(tvShow.getRatingMPAA());
+        stars.setValue(tvShow.getStars());
+        comment.setText(tvShow.getComments());
+        watching.setSelected(tvShow.isWatching());
+
+    }
+
     public void afterShow() {
         this.stars.layout();
         this.starsThumb = (Pane) stars.lookup(".thumb");
@@ -99,7 +111,7 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
         this.rootLayout = new BorderPane();
         this.rootGrid = new GridPane();
         this.dialogScene = new Scene(rootLayout, 200, 400);
-        this.buttonOK = new Button("OK");
+        this.buttonOK = new Button("Save");
         this.buttonCancel = new Button("Cancel");
         this.name = new TextField();
         this.rating = new ComboBox<>(ratingList);
@@ -177,16 +189,14 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
         rootGrid.addRow(2, new Label("Rating:"), starsImageGroup);
         rootGrid.addRow(3, new Label("Watching:"), watching);
         rootGrid.addRow(4, new Label("Comment:"), comment);
-
     }
 
     private boolean isValid() {
         String errorMessage = "";
 
         if (name.getText() == null || name.getText().length() == 0) {
-            errorMessage += "Not valid name.\n";
+            errorMessage += "Enter valid name.\n";
         }
-       
         if (errorMessage.length() == 0) {
             return true;
         } else {
@@ -199,12 +209,12 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            selectedItem.setName(name.getText());
-            selectedItem.setRatingMPAA(rating.getSelectionModel().getSelectedItem());
-            selectedItem.setStars((int) stars.getValue() - 1);
-            selectedItem.setComments(comment.getText());
-            selectedItem.setWatching(watching.isSelected());
-            setResult(selectedItem);
+            tvShow.setName(name.getText());
+            tvShow.setRatingMPAA(rating.getSelectionModel().getSelectedItem());
+            tvShow.setStars((int) stars.getValue() - 1);
+            tvShow.setComments(comment.getText());
+            tvShow.setWatching(watching.isSelected());
+            setResult(tvShow);
         }
 
     };
@@ -224,14 +234,4 @@ public class EditDialogTVShow extends Dialog<TV_Show> {
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
     }
-
-    private void addValues() {
-        name.setText(selectedItem.getName());
-        rating.getSelectionModel().select(selectedItem.getRatingMPAA());
-        stars.setValue(selectedItem.getStars());
-        comment.setText(selectedItem.getComments());
-        watching.setSelected(selectedItem.isWatching());
-
-    }
-
 }

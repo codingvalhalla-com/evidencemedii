@@ -1,6 +1,6 @@
 package com.codingvalhalla.meredith.evidence.gui;
 
-import com.codingvalhalla.meredith.evidence.model.Movie;
+import com.codingvalhalla.meredith.evidence.model.Episode;
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.collections.FXCollections;
@@ -12,6 +12,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -36,22 +37,21 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class EditDialogMovie extends Dialog<Movie> {
+public class DialogTVEpisode extends Dialog<Episode> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
     private DialogPane dialogPane;
     private BorderPane rootLayout;
     private GridPane rootGrid;
-    //private final Stage mainStage;
     private Window window;
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private Movie selectedItem;
+    private Episode episode;
+    private CheckBox watching;
 
     private TextField name;
-    private ComboBox<RatingMPAA> rating;
     private TextArea comment;
     private Slider stars;
     private ImageView starsImage;
@@ -65,8 +65,12 @@ public class EditDialogMovie extends Dialog<Movie> {
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public EditDialogMovie(Movie selectedItem) {
-        this.selectedItem = selectedItem;
+    public DialogTVEpisode() {
+        this(new Episode("", 0, false, ""));
+    }
+
+    public DialogTVEpisode(Episode selectedItem) {
+        this.episode = selectedItem;
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -84,6 +88,14 @@ public class EditDialogMovie extends Dialog<Movie> {
         addValues();
     }
 
+    private void addValues() {
+        name.setText(episode.getName());
+        stars.setValue(episode.getStars());
+        comment.setText(episode.getComment());
+        watching.setSelected(episode.isWatching());
+
+    }
+
     public void afterShow() {
         this.stars.layout();
         this.starsThumb = (Pane) stars.lookup(".thumb");
@@ -99,12 +111,13 @@ public class EditDialogMovie extends Dialog<Movie> {
         this.buttonOK = new Button("Save");
         this.buttonCancel = new Button("Cancel");
         this.name = new TextField();
-        this.rating = new ComboBox<>(ratingList);
         this.comment = new TextArea();
         this.stars = new Slider(1, 11, 1);
         this.starsImage = new ImageView(new Image(GraphicUserInterface.getResources() + "images/stars0.png", 110, 20, false, true));
         this.starsLabel = new Label();
         this.starsImageGroup = new Pane(starsImage, stars);
+        this.watching = new CheckBox();
+
     }
 
     private void addToLayout() {
@@ -140,10 +153,6 @@ public class EditDialogMovie extends Dialog<Movie> {
         name.setPrefWidth(200);
         comment.setPromptText("Enter your comment.");
         comment.setPrefSize(200, 150);
-        comment.setWrapText(true);
-
-        rating.getSelectionModel().selectFirst();
-        rating.setPrefWidth(200);
 
         starsImage.setFitWidth(110);
         stars.setPrefSize(125, 20);
@@ -169,17 +178,16 @@ public class EditDialogMovie extends Dialog<Movie> {
 
     private void initGrid() {
         rootGrid.addRow(0, new Label("Name:"), name);
-        rootGrid.addRow(1, new Label("Rating MPAA:"), rating);
-        rootGrid.addRow(2, new Label("Rating:"), starsImageGroup);
+        rootGrid.addRow(1, new Label("Rating:"), starsImageGroup);
+        rootGrid.addRow(2, new Label("Watching:"), watching);
         rootGrid.addRow(3, new Label("Comment:"), comment);
-
     }
 
     private boolean isValid() {
         String errorMessage = "";
 
         if (name.getText() == null || name.getText().length() == 0) {
-            errorMessage += "Not valid name.\n";
+            errorMessage += "Enter valid name.\n";
         }
         if (errorMessage.length() == 0) {
             return true;
@@ -189,17 +197,19 @@ public class EditDialogMovie extends Dialog<Movie> {
         }
 
     }
+
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            selectedItem.setName(name.getText());
-            selectedItem.setRatingMPAA(rating.getSelectionModel().getSelectedItem());
-            selectedItem.setStars((int) stars.getValue() - 1);
-            selectedItem.setComments(comment.getText());
-            setResult(selectedItem);
+            episode.setName(name.getText());
+            episode.setStars((int) stars.getValue() - 1);
+            episode.setComment(comment.getText());
+            episode.setWatching(watching.isSelected());
+            setResult(episode);
         }
 
     };
+
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogCancelEvent = (ActionEvent event) -> {
         window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
@@ -212,16 +222,8 @@ public class EditDialogMovie extends Dialog<Movie> {
             stars.setValue(Math.round(newValue.doubleValue()));
         });
         starsLabel.textProperty().set("");
-
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
-    }
-
-    private void addValues() {
-        name.setText(selectedItem.getName());
-        rating.getSelectionModel().select(selectedItem.getRatingMPAA());
-        stars.setValue(selectedItem.getStars());
-        comment.setText(selectedItem.getComments());
     }
 
 }
