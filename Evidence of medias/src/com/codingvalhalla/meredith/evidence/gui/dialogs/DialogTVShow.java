@@ -129,7 +129,7 @@ public class DialogTVShow extends Dialog<TV_Show> {
     private void initProperties() {
         buttonOK.setPrefWidth(buttonWidth);
         buttonCancel.setPrefWidth(buttonWidth);
-        name.setPromptText("Enter name of movie.");
+        name.setPromptText("Enter name of TV show.");
         name.setPrefWidth(200);
         comment.setPromptText("Enter your comment.");
         comment.setPrefSize(200, 150);

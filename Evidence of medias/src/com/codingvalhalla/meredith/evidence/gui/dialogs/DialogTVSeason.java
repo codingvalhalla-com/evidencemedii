@@ -107,7 +107,7 @@ public class DialogTVSeason extends Dialog<Season> {
     private void initProperties() {
         buttonOK.setPrefWidth(buttonWidth);
         buttonCancel.setPrefWidth(buttonWidth);
-        name.setPromptText("Enter name of movie.");
+        name.setPromptText("Enter name of season.");
         name.setPrefWidth(200);
 
         rootGrid.setHgap(10.0);

@@ -145,7 +145,7 @@ public class DialogTVEpisode extends Dialog<Episode> {
     private void initProperties() {
         buttonOK.setPrefWidth(buttonWidth);
         buttonCancel.setPrefWidth(buttonWidth);
-        name.setPromptText("Enter name of movie.");
+        name.setPromptText("Enter name of episode.");
         name.setPrefWidth(200);
         comment.setPromptText("Enter your comment.");
         comment.setPrefSize(200, 150);
