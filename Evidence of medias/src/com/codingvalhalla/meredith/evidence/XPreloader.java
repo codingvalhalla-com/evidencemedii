@@ -1,9 +1,14 @@
 package com.codingvalhalla.meredith.evidence;
 
+import com.codingvalhalla.meredith.evidence.gui.GraphicUserInterface;
 import javafx.application.Preloader;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -13,6 +18,12 @@ import javafx.stage.StageStyle;
  */
 public class XPreloader extends Preloader {
 
+    private static final String RESOURCES = GraphicUserInterface.getResources();
+    private final String SPLASH = "images/splash.png";
+
+    private ImageView imageView;
+    private Pane pane;
+    private Label progress;
     private Stage preloaderStage;
     private Scene scene;
 
@@ -25,22 +36,8 @@ public class XPreloader extends Preloader {
 
     @Override
     public void init() {
-        Splash root = new Splash();
-        root.getPane().setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
-        });
-        root.getPane().setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                preloaderStage.setX(event.getScreenX() - xOffset);
-                preloaderStage.setY(event.getScreenY() - yOffset);
-            }
-        });
-        scene = new Scene(root.getPane());
+        initSplash();
+        scene = new Scene(pane);
 
     }
 
@@ -56,7 +53,7 @@ public class XPreloader extends Preloader {
     @Override
     public void handleApplicationNotification(PreloaderNotification info) {
         if (info instanceof ProgressNotification) {
-            Splash.label.setText("Loading: " + String.format("%d", (long) ((ProgressNotification) info).getProgress()) + "%");
+            progress.setText("Loading: " + String.format("%d", (long) ((ProgressNotification) info).getProgress()) + "%");
         }
 
     }
@@ -70,4 +67,23 @@ public class XPreloader extends Preloader {
                 break;
         }
     }
+
+    private void initSplash() {
+        pane = new Pane();
+        progress = new Label();
+        imageView = new ImageView(new Image(RESOURCES + SPLASH, 854, 480, true, true));
+        pane.setOnMousePressed((MouseEvent event) -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+        pane.setOnMouseDragged((MouseEvent event) -> {
+            preloaderStage.setX(event.getScreenX() - xOffset);
+            preloaderStage.setY(event.getScreenY() - yOffset);
+        });
+        progress.setTranslateX(50);
+        progress.setTranslateY(imageView.getImage().getHeight() - 50);
+        progress.setTextFill(Color.SILVER);
+        pane.getChildren().addAll(imageView, progress);
+    }
+
 }
