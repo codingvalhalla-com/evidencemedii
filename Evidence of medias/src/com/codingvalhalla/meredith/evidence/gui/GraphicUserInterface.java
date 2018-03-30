@@ -1,5 +1,9 @@
 package com.codingvalhalla.meredith.evidence.gui;
 
+import com.codingvalhalla.meredith.evidence.gui.dialogs.DialogTVSeason;
+import com.codingvalhalla.meredith.evidence.gui.dialogs.DialogMovie;
+import com.codingvalhalla.meredith.evidence.gui.dialogs.DialogTVShow;
+import com.codingvalhalla.meredith.evidence.gui.dialogs.DialogTVEpisode;
 import com.codingvalhalla.meredith.evidence.EvidenceMain;
 import com.codingvalhalla.meredith.evidence.model.Episode;
 import com.codingvalhalla.meredith.evidence.model.Movie;
@@ -57,7 +61,7 @@ import javafx.stage.WindowEvent;
  */
 public class GraphicUserInterface {
 
-    private final String title = "Media records - JavaFX";
+    private final static String TITLE = "Media records - JavaFX";
     private final static String RESOURCES = EvidenceMain.class.getResource("resources/").toExternalForm();
 
     private BorderPane rootLayout;
@@ -136,7 +140,7 @@ public class GraphicUserInterface {
     public GraphicUserInterface(Stage stage) throws IllegalAccessException {
         if (!alreadyExecuted) {
             mainStage = stage;
-            mainStage.setTitle(title);
+            mainStage.setTitle(TITLE);
             initRootLayout();
             createListerers();
             alreadyExecuted = true;
@@ -144,6 +148,10 @@ public class GraphicUserInterface {
         } else {
             throw new IllegalAccessException("Cannot make more than one GUI");
         }
+    }
+
+    public static String getTitle() {
+        return TITLE;
     }
 
     public static String getResources() {
@@ -345,36 +353,28 @@ public class GraphicUserInterface {
         tvShowBox.getChildren().addAll(tvShowAddButton, tvShowEditButton, tvShowRemoveButton);
         tvSeasonBox.getChildren().addAll(tvSeasonAddButton, tvSeasonEditButton, tvSeasonRemoveButton);
         tvEpisodesBox.getChildren().addAll(tvEpisodeAddButton, tvEpisodeEditButton, tvEpisodeRemoveButton);
+        botBox.getChildren().addAll(movieBox, tvShowBox, tvSeasonBox, tvEpisodesBox);
+        result.getChildren().addAll(topBox, botBox);
+
+        for (int i = 0; i < botBox.getChildren().size(); i++) {
+            HBox tempBox = (HBox) botBox.getChildren().get(i);
+            for (int j = 0; j < tempBox.getChildren().size(); j++) {
+                Button tempButton = (Button) tempBox.getChildren().get(j);
+                tempButton.setPrefWidth(buttonWidth);
+            }
+        }
 
         for (int i = 0; i < topBox.getChildren().size(); i++) {
             Button temp = (Button) topBox.getChildren().get(i);
             temp.setPrefWidth(buttonWidth);
         }
-        for (int i = 0; i < movieBox.getChildren().size(); i++) {
-            Button temp = (Button) movieBox.getChildren().get(i);
-            temp.setPrefWidth(buttonWidth);
-        }
-        for (int i = 0; i < tvShowBox.getChildren().size(); i++) {
-            Button temp = (Button) tvShowBox.getChildren().get(i);
-            temp.setPrefWidth(buttonWidth);
-        }
 
-        for (int i = 0; i < tvSeasonBox.getChildren().size(); i++) {
-            Button temp = (Button) tvSeasonBox.getChildren().get(i);
-            temp.setPrefWidth(buttonWidth);
-        }
-
-        for (int i = 0; i < tvEpisodesBox.getChildren().size(); i++) {
-            Button temp = (Button) tvEpisodesBox.getChildren().get(i);
-            temp.setPrefWidth(buttonWidth);
-        }
-        botBox.getChildren().addAll(movieBox, tvShowBox, tvSeasonBox, tvEpisodesBox);
-        result.getChildren().addAll(topBox, botBox);
         return result;
     }
 
     private void initMovieList() {
         movieList = new TableView<>();
+        movieList.getStyleClass().add("movie-list");
 
         movieName = new TableColumn<>("Name");
         movieRating = new TableColumn<>("Rating MPAA");
@@ -576,7 +576,7 @@ public class GraphicUserInterface {
         tvShowWatching.setCellValueFactory(
                 new PropertyValueFactory<>("watching"));
 
-        tvShowList.getColumns().addAll(tvShowWatching, tvShowName, tvShowRating, tvShowStars);
+        tvShowList.getColumns().addAll(tvShowName, tvShowRating, tvShowStars, tvShowWatching);
 
     }
 
@@ -650,7 +650,7 @@ public class GraphicUserInterface {
 
         tvSeasonRating.setPrefWidth(110);
         tvSeasonStars.setPrefWidth(120);
-        tvSeasonName.prefWidthProperty().bind(tvShowList.widthProperty().add(-tvShowStars.getPrefWidth()).add(-tvShowRating.getPrefWidth()).add(-tvShowWatching.getPrefWidth()).add(-15));
+        tvSeasonName.prefWidthProperty().bind(tvSeasonList.widthProperty().add(-tvSeasonStars.getPrefWidth()).add(-tvSeasonRating.getPrefWidth()).add(-15));
 
         tvSeasonName.setCellValueFactory(
                 new PropertyValueFactory<>("name"));
@@ -728,7 +728,7 @@ public class GraphicUserInterface {
 
         tvEpisodeRating.setPrefWidth(110);
         tvEpisodeStars.setPrefWidth(120);
-        tvEpisodeName.prefWidthProperty().bind(tvShowList.widthProperty().add(-tvShowStars.getPrefWidth()).add(-tvShowRating.getPrefWidth()).add(-tvShowWatching.getPrefWidth()).add(-15));
+        tvEpisodeName.prefWidthProperty().bind(tvEpisodeList.widthProperty().add(-tvEpisodeStars.getPrefWidth()).add(-tvEpisodeRating.getPrefWidth()).add(-15));
 
         tvEpisodeName.setCellValueFactory(
                 new PropertyValueFactory<>("name"));
@@ -883,50 +883,6 @@ public class GraphicUserInterface {
     }
 
     @SuppressWarnings("FieldMayBeFinal")
-    private EventHandler<ActionEvent> handlerTVShowAddButton = (ActionEvent event) -> {
-        DialogTVShow add = new DialogTVShow();
-        add.setTitle("Add TV show");
-        DialogPane dialogPane = add.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
-        dialogPane.getStyleClass().add("add-dialog");
-        add.show();
-        add.afterShow();
-        add.resultProperty().addListener((observable, oldValue, newValue) -> {
-            try {
-                tvShowList.getItems().add(newValue);
-                saved = false;
-                tvShowList.refresh();
-            } catch (Exception e) {
-                StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
-            }
-        });
-    };
-
-    @SuppressWarnings("FieldMayBeFinal")
-    private EventHandler<ActionEvent> handlerTVShowEditButton = (ActionEvent event) -> {
-        TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
-        DialogTVShow edit = new DialogTVShow(x);
-        edit.setTitle("Edit TV show");
-        DialogPane dialogPane = edit.getDialogPane();
-        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
-        dialogPane.getStyleClass().add("edit-dialog");
-        edit.show();
-        edit.afterShow();
-        edit.resultProperty().addListener((observable, oldValue, newValue) -> {
-            saved = false;
-            tvShowList.refresh();
-        });
-    };
-
-    @SuppressWarnings("FieldMayBeFinal")
-    private EventHandler<ActionEvent> handlerTVShowRemoveButton = (ActionEvent event) -> {
-        TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
-        tvShowList.getItems().remove(x);
-        tvShowList.refresh();
-        saved = false;
-    };
-
-    @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerMovieAddButton = (ActionEvent event) -> {
         DialogMovie add = new DialogMovie();
         add.setTitle("Add movie");
@@ -973,8 +929,53 @@ public class GraphicUserInterface {
     };
 
     @SuppressWarnings("FieldMayBeFinal")
+    private EventHandler<ActionEvent> handlerTVShowAddButton = (ActionEvent event) -> {
+        DialogTVShow add = new DialogTVShow();
+        add.setTitle("Add TV show");
+        DialogPane dialogPane = add.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
+        dialogPane.getStyleClass().add("add-dialog");
+        add.show();
+        add.afterShow();
+        add.resultProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                tvShowList.getItems().add(newValue);
+                saved = false;
+                tvShowList.refresh();
+            } catch (Exception e) {
+                StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
+            }
+        });
+    };
+
+    @SuppressWarnings("FieldMayBeFinal")
+    private EventHandler<ActionEvent> handlerTVShowEditButton = (ActionEvent event) -> {
+        TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
+        DialogTVShow edit = new DialogTVShow(x);
+        edit.setTitle("Edit TV show");
+        DialogPane dialogPane = edit.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
+        dialogPane.getStyleClass().add("edit-dialog");
+        edit.show();
+        edit.afterShow();
+        edit.resultProperty().addListener((observable, oldValue, newValue) -> {
+            saved = false;
+            tvShowList.refresh();
+        });
+    };
+
+    @SuppressWarnings("FieldMayBeFinal")
+    private EventHandler<ActionEvent> handlerTVShowRemoveButton = (ActionEvent event) -> {
+        TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
+        tvShowList.getItems().remove(x);
+        tvShowList.refresh();
+        saved = false;
+    };
+
+    @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonAddButton = (ActionEvent event) -> {
         Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false);
+        result.setRatingMPAA(currentTV_Show.getRatingMPAA());
         currentTV_Show.getSeasons().add(result);
         tvSeasonList.getItems().clear();
         tvSeasonList.getItems().addAll(currentTV_Show.getSeasons());

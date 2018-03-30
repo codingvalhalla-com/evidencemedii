@@ -1,7 +1,8 @@
-package com.codingvalhalla.meredith.evidence.gui;
+package com.codingvalhalla.meredith.evidence.gui.dialogs;
 
+import com.codingvalhalla.meredith.evidence.gui.GraphicUserInterface;
+import com.codingvalhalla.meredith.evidence.model.Episode;
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
-import com.codingvalhalla.meredith.evidence.model.Season;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +13,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
@@ -35,7 +37,7 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class DialogTVSeason extends Dialog<Season> {
+public class DialogTVEpisode extends Dialog<Episode> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
@@ -46,9 +48,10 @@ public class DialogTVSeason extends Dialog<Season> {
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private Season selectedItem;
+    private Episode episode;
 
     private TextField name;
+    private TextArea comment;
     private Slider stars;
     private ImageView starsImage;
     private Pane starsImageGroup;
@@ -61,8 +64,12 @@ public class DialogTVSeason extends Dialog<Season> {
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public DialogTVSeason(Season selectedItem) {
-        this.selectedItem = selectedItem;
+    public DialogTVEpisode() {
+        this(new Episode("", 0, false, ""));
+    }
+
+    public DialogTVEpisode(Episode selectedItem) {
+        this.episode = selectedItem;
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -80,6 +87,13 @@ public class DialogTVSeason extends Dialog<Season> {
         addValues();
     }
 
+    private void addValues() {
+        name.setText(episode.getName());
+        stars.setValue(episode.getStars());
+        comment.setText(episode.getComment());
+
+    }
+
     public void afterShow() {
         this.stars.layout();
         this.starsThumb = (Pane) stars.lookup(".thumb");
@@ -92,9 +106,10 @@ public class DialogTVSeason extends Dialog<Season> {
         this.rootLayout = new BorderPane();
         this.rootGrid = new GridPane();
         this.dialogScene = new Scene(rootLayout, 200, 400);
-        this.buttonOK = new Button("OK");
+        this.buttonOK = new Button("Save");
         this.buttonCancel = new Button("Cancel");
         this.name = new TextField();
+        this.comment = new TextArea();
         this.stars = new Slider(1, 11, 1);
         this.starsImage = new ImageView(new Image(GraphicUserInterface.getResources() + "images/stars0.png", 110, 20, false, true));
         this.starsLabel = new Label();
@@ -133,7 +148,10 @@ public class DialogTVSeason extends Dialog<Season> {
         buttonCancel.setPrefWidth(buttonWidth);
         name.setPromptText("Enter name of movie.");
         name.setPrefWidth(200);
-
+        comment.setPromptText("Enter your comment.");
+        comment.setPrefSize(200, 150);
+        comment.setWrapText(true);
+        
         starsImage.setFitWidth(110);
         stars.setPrefSize(125, 20);
         starsImage.setLayoutX(7);
@@ -159,16 +177,15 @@ public class DialogTVSeason extends Dialog<Season> {
     private void initGrid() {
         rootGrid.addRow(0, new Label("Name:"), name);
         rootGrid.addRow(1, new Label("Rating:"), starsImageGroup);
-
+        rootGrid.addRow(2, new Label("Comment:"), comment);
     }
 
     private boolean isValid() {
         String errorMessage = "";
 
         if (name.getText() == null || name.getText().length() == 0) {
-            errorMessage += "Not valid name.\n";
+            errorMessage += "Enter valid name.\n";
         }
-
         if (errorMessage.length() == 0) {
             return true;
         } else {
@@ -181,10 +198,10 @@ public class DialogTVSeason extends Dialog<Season> {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            selectedItem.setName(name.getText());
-            selectedItem.setStars((int) stars.getValue() - 1);
-
-            setResult(selectedItem);
+            episode.setName(name.getText());
+            episode.setStars((int) stars.getValue() - 1);
+            episode.setComment(comment.getText());
+            setResult(episode);
         }
 
     };
@@ -203,12 +220,6 @@ public class DialogTVSeason extends Dialog<Season> {
         starsLabel.textProperty().set("");
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
-    }
-
-    private void addValues() {
-        name.setText(selectedItem.getName());
-        stars.setValue(selectedItem.getStars());
-
     }
 
 }

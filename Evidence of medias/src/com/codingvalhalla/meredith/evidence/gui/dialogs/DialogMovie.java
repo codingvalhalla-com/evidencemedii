@@ -1,7 +1,8 @@
-package com.codingvalhalla.meredith.evidence.gui;
+package com.codingvalhalla.meredith.evidence.gui.dialogs;
 
+import com.codingvalhalla.meredith.evidence.gui.GraphicUserInterface;
+import com.codingvalhalla.meredith.evidence.model.Movie;
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
-import com.codingvalhalla.meredith.evidence.model.TV_Show;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,7 +13,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
@@ -37,19 +37,18 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class DialogTVShow extends Dialog<TV_Show> {
+public class DialogMovie extends Dialog<Movie> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
     private DialogPane dialogPane;
     private BorderPane rootLayout;
     private GridPane rootGrid;
-    //private final Stage mainStage;
     private Window window;
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private TV_Show tvShow;
+    private Movie movie;
 
     private TextField name;
     private ComboBox<RatingMPAA> rating;
@@ -59,7 +58,6 @@ public class DialogTVShow extends Dialog<TV_Show> {
     private Pane starsImageGroup;
     private Label starsLabel;
     private Pane starsThumb;
-    private CheckBox watching;
 
     private Button buttonOK;
     private Button buttonCancel;
@@ -67,12 +65,12 @@ public class DialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public DialogTVShow() {
-        this(new TV_Show("", 0, RatingMPAA.G, false, ""));
+    public DialogMovie() {
+        this(new Movie("", RatingMPAA.G, "", 0));
     }
 
-    public DialogTVShow(TV_Show selectedItem) {
-        this.tvShow = selectedItem;
+    public DialogMovie(Movie selectedItem) {
+        this.movie = selectedItem;
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -91,12 +89,10 @@ public class DialogTVShow extends Dialog<TV_Show> {
     }
 
     private void addValues() {
-        name.setText(tvShow.getName());
-        rating.getSelectionModel().select(tvShow.getRatingMPAA());
-        stars.setValue(tvShow.getStars());
-        comment.setText(tvShow.getComments());
-        watching.setSelected(tvShow.isWatching());
-
+        name.setText(movie.getName());
+        rating.getSelectionModel().select(movie.getRatingMPAA());
+        stars.setValue(movie.getStars());
+        comment.setText(movie.getComments());
     }
 
     public void afterShow() {
@@ -120,7 +116,6 @@ public class DialogTVShow extends Dialog<TV_Show> {
         this.starsImage = new ImageView(new Image(GraphicUserInterface.getResources() + "images/stars0.png", 110, 20, false, true));
         this.starsLabel = new Label();
         this.starsImageGroup = new Pane(starsImage, stars);
-        this.watching = new CheckBox();
 
     }
 
@@ -129,6 +124,7 @@ public class DialogTVShow extends Dialog<TV_Show> {
         rootLayout.setBottom(initBottom());
         rootLayout.setCenter(rootGrid);
         dialogPane.setContent(rootLayout);
+
     }
 
     private VBox initTop() {
@@ -157,9 +153,10 @@ public class DialogTVShow extends Dialog<TV_Show> {
         name.setPrefWidth(200);
         comment.setPromptText("Enter your comment.");
         comment.setPrefSize(200, 150);
+        comment.setWrapText(true);
 
         rating.getSelectionModel().selectFirst();
-        rating.setPrefWidth(200);
+        rating.prefWidthProperty().bind(name.prefWidthProperty());
 
         starsImage.setFitWidth(110);
         stars.setPrefSize(125, 20);
@@ -187,15 +184,15 @@ public class DialogTVShow extends Dialog<TV_Show> {
         rootGrid.addRow(0, new Label("Name:"), name);
         rootGrid.addRow(1, new Label("Rating MPAA:"), rating);
         rootGrid.addRow(2, new Label("Rating:"), starsImageGroup);
-        rootGrid.addRow(3, new Label("Watching:"), watching);
-        rootGrid.addRow(4, new Label("Comment:"), comment);
+        rootGrid.addRow(3, new Label("Comment:"), comment);
+
     }
 
     private boolean isValid() {
         String errorMessage = "";
 
         if (name.getText() == null || name.getText().length() == 0) {
-            errorMessage += "Enter valid name.\n";
+            errorMessage += "Not valid name.\n";
         }
         if (errorMessage.length() == 0) {
             return true;
@@ -209,16 +206,14 @@ public class DialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            tvShow.setName(name.getText());
-            tvShow.setRatingMPAA(rating.getSelectionModel().getSelectedItem());
-            tvShow.setStars((int) stars.getValue() - 1);
-            tvShow.setComments(comment.getText());
-            tvShow.setWatching(watching.isSelected());
-            setResult(tvShow);
+            movie.setName(name.getText());
+            movie.setRatingMPAA(rating.getSelectionModel().getSelectedItem());
+            movie.setStars((int) stars.getValue() - 1);
+            movie.setComments(comment.getText());
+            setResult(movie);
         }
 
     };
-
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogCancelEvent = (ActionEvent event) -> {
         window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
