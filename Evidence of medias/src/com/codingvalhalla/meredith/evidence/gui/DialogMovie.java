@@ -1,7 +1,7 @@
 package com.codingvalhalla.meredith.evidence.gui;
 
+import com.codingvalhalla.meredith.evidence.model.Movie;
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
-import com.codingvalhalla.meredith.evidence.model.TV_Show;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,19 +36,18 @@ import javafx.stage.WindowEvent;
  *
  * @author Meredith
  */
-public class AddDialogTVShow extends Dialog<TV_Show> {
+public class DialogMovie extends Dialog<Movie> {
 
     private final double buttonWidth = 75;
     @SuppressWarnings("FieldMayBeFinal")
     private DialogPane dialogPane;
     private BorderPane rootLayout;
     private GridPane rootGrid;
-    //private final Stage mainStage;
     private Window window;
     private Stage dialogStage;
     private Scene dialogScene;
 
-    private TV_Show result;
+    private Movie movie;
 
     private TextField name;
     private ComboBox<RatingMPAA> rating;
@@ -65,7 +64,12 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private ObservableList<RatingMPAA> ratingList = FXCollections.observableArrayList(RatingMPAA.values());
 
-    public AddDialogTVShow() {
+    public DialogMovie() {
+        this(new Movie("", RatingMPAA.G, "", 0));
+    }
+
+    public DialogMovie(Movie selectedItem) {
+        this.movie = selectedItem;
         window = getDialogPane().getScene().getWindow();
         window.setOnCloseRequest((WindowEvent event) -> {
             if (StaticAlerts.confirmMessage("close this window without saving")) {
@@ -80,6 +84,14 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         initProperties();
         addToLayout();
         initListers();
+        addValues();
+    }
+
+    private void addValues() {
+        name.setText(movie.getName());
+        rating.getSelectionModel().select(movie.getRatingMPAA());
+        stars.setValue(movie.getStars());
+        comment.setText(movie.getComments());
     }
 
     public void afterShow() {
@@ -111,6 +123,7 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         rootLayout.setBottom(initBottom());
         rootLayout.setCenter(rootGrid);
         dialogPane.setContent(rootLayout);
+
     }
 
     private VBox initTop() {
@@ -139,9 +152,10 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         name.setPrefWidth(200);
         comment.setPromptText("Enter your comment.");
         comment.setPrefSize(200, 150);
+        comment.setWrapText(true);
 
         rating.getSelectionModel().selectFirst();
-        rating.setPrefWidth(200);
+        rating.prefWidthProperty().bind(name.prefWidthProperty());
 
         starsImage.setFitWidth(110);
         stars.setPrefSize(125, 20);
@@ -170,13 +184,14 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         rootGrid.addRow(1, new Label("Rating MPAA:"), rating);
         rootGrid.addRow(2, new Label("Rating:"), starsImageGroup);
         rootGrid.addRow(3, new Label("Comment:"), comment);
+
     }
 
     private boolean isValid() {
         String errorMessage = "";
 
         if (name.getText() == null || name.getText().length() == 0) {
-            errorMessage += "Enter valid name.\n";
+            errorMessage += "Not valid name.\n";
         }
         if (errorMessage.length() == 0) {
             return true;
@@ -190,12 +205,14 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
-            result = new TV_Show(name.getText(), (int) stars.getValue() - 1, rating.getSelectionModel().getSelectedItem(), false, comment.getText());
-            setResult(result);
+            movie.setName(name.getText());
+            movie.setRatingMPAA(rating.getSelectionModel().getSelectedItem());
+            movie.setStars((int) stars.getValue() - 1);
+            movie.setComments(comment.getText());
+            setResult(movie);
         }
 
     };
-
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> dialogCancelEvent = (ActionEvent event) -> {
         window.fireEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSE_REQUEST));
@@ -211,5 +228,4 @@ public class AddDialogTVShow extends Dialog<TV_Show> {
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
     }
-
 }

@@ -18,7 +18,7 @@ public class Season implements java.io.Serializable {
     private List<Episode> episodes;
     private boolean watching;
 
-    public Season(String name, int stars, boolean watching, String comments) {
+    public Season(String name, int stars, boolean watching) {
         this.name = name;
         this.stars = stars;
         this.watching = watching;

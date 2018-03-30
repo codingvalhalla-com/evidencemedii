@@ -128,12 +128,12 @@ public class GraphicUserInterface {
     private TableColumn<Season, String> tvSeasonName;
     private TableColumn<Season, RatingMPAA> tvSeasonRating;
     private TableColumn<Season, Integer> tvSeasonStars;
-    private TableColumn<Season, Boolean> tvSeasonWatching;
+
 
     private TableColumn<Episode, String> tvEpisodeName;
     private TableColumn<Episode, RatingMPAA> tvEpisodeRating;
     private TableColumn<Episode, Integer> tvEpisodeStars;
-    private TableColumn<Episode, Boolean> tvEpisodeWatching;
+
 
     public GraphicUserInterface(Stage stage) throws IllegalAccessException {
         if (!alreadyExecuted) {
@@ -588,15 +588,12 @@ public class GraphicUserInterface {
         tvSeasonName = new TableColumn<>("Name");
         tvSeasonRating = new TableColumn<>("Rating MPAA");
         tvSeasonStars = new TableColumn<>("Rating");
-        tvSeasonWatching = new TableColumn<>();
         Label labelWatching = new Label("W");
         Tooltip watchingColumnTooltip = new Tooltip("Watching");
         labelWatching.setTooltip(watchingColumnTooltip);
-        tvSeasonWatching.setGraphic(labelWatching);
 
         tvSeasonRating.setStyle("-fx-alignment: CENTER;");
         tvSeasonStars.setStyle("-fx-alignment: CENTER;");
-        tvSeasonWatching.setStyle("-fx-alignment: CENTER;");
 
         tvSeasonStars.setCellFactory((TableColumn<Season, Integer> param) -> {
             final ImageView imageview = new ImageView();
@@ -652,30 +649,9 @@ public class GraphicUserInterface {
 
             return cell;
         });
-        tvSeasonWatching.setCellFactory(
-                (TableColumn<Season, Boolean> param) -> {
-                    CheckBox checkBox = new CheckBox();
-                    TableCell<Season, Boolean> cell = new TableCell<Season, Boolean>() {
-                @Override
-                protected void updateItem(Boolean item, boolean empty) {
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        checkBox.setSelected(item);
-                        setGraphic(checkBox);
-                    }
-                }
-
-            };
-                    checkBox.setDisable(true);
-                    checkBox.setStyle("-fx-opacity: 1;");
-
-                    return cell;
-                }
-        );
+       
         tvSeasonRating.setPrefWidth(110);
         tvSeasonStars.setPrefWidth(120);
-        tvSeasonWatching.setPrefWidth(40);
         tvSeasonName.prefWidthProperty().bind(tvShowList.widthProperty().add(-tvShowStars.getPrefWidth()).add(-tvShowRating.getPrefWidth()).add(-tvShowWatching.getPrefWidth()).add(-15));
 
         tvSeasonName.setCellValueFactory(
@@ -684,10 +660,8 @@ public class GraphicUserInterface {
                 new PropertyValueFactory<>("ratingMPAA"));
         tvSeasonStars.setCellValueFactory(
                 new PropertyValueFactory<>("stars"));
-        tvSeasonWatching.setCellValueFactory(
-                new PropertyValueFactory<>("watching"));
 
-        tvSeasonList.getColumns().addAll(tvSeasonWatching, tvSeasonName, tvSeasonRating, tvSeasonStars);
+        tvSeasonList.getColumns().addAll(tvSeasonName, tvSeasonRating, tvSeasonStars);
 
     }
 
@@ -697,15 +671,13 @@ public class GraphicUserInterface {
         tvEpisodeName = new TableColumn<>("Name");
         tvEpisodeRating = new TableColumn<>("Rating MPAA");
         tvEpisodeStars = new TableColumn<>("Rating");
-        tvEpisodeWatching = new TableColumn<>();
         Label labelWatching = new Label("W");
         Tooltip watchingColumnTooltip = new Tooltip("Watching");
         labelWatching.setTooltip(watchingColumnTooltip);
-        tvEpisodeWatching.setGraphic(labelWatching);
+     
 
         tvEpisodeRating.setStyle("-fx-alignment: CENTER;");
         tvEpisodeStars.setStyle("-fx-alignment: CENTER;");
-        tvEpisodeWatching.setStyle("-fx-alignment: CENTER;");
 
         tvEpisodeStars.setCellFactory((TableColumn<Episode, Integer> param) -> {
             final ImageView imageview = new ImageView();
@@ -756,28 +728,9 @@ public class GraphicUserInterface {
             };
             return cell;
         });
-        tvEpisodeWatching.setCellFactory(
-                (TableColumn<Episode, Boolean> param) -> {
-                    CheckBox checkBox = new CheckBox();
-                    TableCell<Episode, Boolean> cell = new TableCell<Episode, Boolean>() {
-                @Override
-                protected void updateItem(Boolean item, boolean empty) {
-                    if (empty) {
-                        setGraphic(null);
-                    } else {
-                        checkBox.setSelected(item);
-                        setGraphic(checkBox);
-                    }
-                }
-            };
-                    checkBox.setDisable(true);
-                    checkBox.setStyle("-fx-opacity: 1;");
-                    return cell;
-                }
-        );
+       
         tvEpisodeRating.setPrefWidth(110);
         tvEpisodeStars.setPrefWidth(120);
-        tvEpisodeWatching.setPrefWidth(40);
         tvEpisodeName.prefWidthProperty().bind(tvShowList.widthProperty().add(-tvShowStars.getPrefWidth()).add(-tvShowRating.getPrefWidth()).add(-tvShowWatching.getPrefWidth()).add(-15));
 
         tvEpisodeName.setCellValueFactory(
@@ -786,10 +739,9 @@ public class GraphicUserInterface {
                 new PropertyValueFactory<>("ratingMPAA"));
         tvEpisodeStars.setCellValueFactory(
                 new PropertyValueFactory<>("stars"));
-        tvEpisodeWatching.setCellValueFactory(
-                new PropertyValueFactory<>("watching"));
 
-        tvEpisodeList.getColumns().addAll(tvEpisodeWatching, tvEpisodeName, tvEpisodeRating, tvEpisodeStars);
+        
+        tvEpisodeList.getColumns().addAll(tvEpisodeName, tvEpisodeRating, tvEpisodeStars);
 
     }
 
@@ -936,7 +888,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVShowAddButton = (ActionEvent event) -> {
-        AddDialogTVShow add = new AddDialogTVShow();
+        DialogTVShow add = new DialogTVShow();
         add.setTitle("Add TV show");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -957,7 +909,7 @@ public class GraphicUserInterface {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVShowEditButton = (ActionEvent event) -> {
         TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
-        EditDialogTVShow edit = new EditDialogTVShow(x);
+        DialogTVShow edit = new DialogTVShow(x);
         edit.setTitle("Edit TV show");
         DialogPane dialogPane = edit.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -980,7 +932,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerMovieAddButton = (ActionEvent event) -> {
-        AddDialogMovie add = new AddDialogMovie();
+        DialogMovie add = new DialogMovie();
         add.setTitle("Add movie");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -1002,7 +954,7 @@ public class GraphicUserInterface {
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerMovieEditButton = (ActionEvent event) -> {
         Movie x = movieList.getSelectionModel().getSelectedItem();
-        EditDialogMovie edit = new EditDialogMovie(x);
+        DialogMovie edit = new DialogMovie(x);
         edit.setTitle("Edit movie");
         DialogPane dialogPane = edit.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -1026,7 +978,8 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonAddButton = (ActionEvent event) -> {
-        Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false, "");
+        Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false);
+        result.setRatingMPAA(currentTV_Show.getRatingMPAA());
         currentTV_Show.getSeasons().add(result);
         tvSeasonList.getItems().clear();
         tvSeasonList.getItems().addAll(currentTV_Show.getSeasons());
@@ -1036,8 +989,18 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonEditButton = (ActionEvent event) -> {
-        //TODO EDIT WINDOW
-        StaticAlerts.infoMessage("Not implemented yet", "This functions is not implemented yet");
+        DialogTVSeason edit = new DialogTVSeason(tvSeasonList.getSelectionModel().getSelectedItem());
+        edit.setTitle("Edit season");
+        DialogPane dialogPane = edit.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
+        dialogPane.getStyleClass().add("edit-dialog");
+        edit.show();
+        edit.afterShow();
+        edit.resultProperty().addListener((observable, oldValue, newValue) -> {
+            saved = false;
+            movieList.refresh();
+        });
+        updateMovieComment(movieList.getSelectionModel().getSelectedItem());
     };
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -1055,7 +1018,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVEpisodeAddButton = (ActionEvent event) -> {
-        AddDialogTVEpisode add = new AddDialogTVEpisode();
+        DialogTVEpisode add = new DialogTVEpisode();
         add.setTitle("Add episode");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
@@ -1064,7 +1027,9 @@ public class GraphicUserInterface {
         add.afterShow();
         add.resultProperty().addListener((observable, oldValue, newValue) -> {
             try {
+                newValue.setRatingMPAA(currentSeason.getRatingMPAA());
                 currentSeason.getEpisodes().add(newValue);
+
                 saved = false;
                 tvEpisodeList.getItems().clear();
                 tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
@@ -1077,8 +1042,27 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVEpisodeEditButton = (ActionEvent event) -> {
-        //TODO
-        StaticAlerts.infoMessage("Not implemented yet", "This functions is not implemented yet");
+        Episode x = tvEpisodeList.getSelectionModel().getSelectedItem();
+        DialogTVEpisode edit = new DialogTVEpisode();
+        edit.setTitle("Edit episode");
+        DialogPane dialogPane = edit.getDialogPane();
+        dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
+        dialogPane.getStyleClass().add("add-dialog");
+        edit.show();
+        edit.afterShow();
+        edit.resultProperty().addListener((observable, oldValue, newValue) -> {
+            try {
+                newValue.setRatingMPAA(currentSeason.getRatingMPAA());
+                currentSeason.getEpisodes().add(newValue);
+
+                saved = false;
+                tvEpisodeList.getItems().clear();
+                tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
+                tvEpisodeList.refresh();
+            } catch (Exception e) {
+                StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
+            }
+        });
     };
 
     @SuppressWarnings("FieldMayBeFinal")
