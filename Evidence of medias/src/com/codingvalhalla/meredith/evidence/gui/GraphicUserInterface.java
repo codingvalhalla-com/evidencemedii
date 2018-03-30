@@ -129,11 +129,9 @@ public class GraphicUserInterface {
     private TableColumn<Season, RatingMPAA> tvSeasonRating;
     private TableColumn<Season, Integer> tvSeasonStars;
 
-
     private TableColumn<Episode, String> tvEpisodeName;
     private TableColumn<Episode, RatingMPAA> tvEpisodeRating;
     private TableColumn<Episode, Integer> tvEpisodeStars;
-
 
     public GraphicUserInterface(Stage stage) throws IllegalAccessException {
         if (!alreadyExecuted) {
@@ -649,7 +647,7 @@ public class GraphicUserInterface {
 
             return cell;
         });
-       
+
         tvSeasonRating.setPrefWidth(110);
         tvSeasonStars.setPrefWidth(120);
         tvSeasonName.prefWidthProperty().bind(tvShowList.widthProperty().add(-tvShowStars.getPrefWidth()).add(-tvShowRating.getPrefWidth()).add(-tvShowWatching.getPrefWidth()).add(-15));
@@ -674,7 +672,6 @@ public class GraphicUserInterface {
         Label labelWatching = new Label("W");
         Tooltip watchingColumnTooltip = new Tooltip("Watching");
         labelWatching.setTooltip(watchingColumnTooltip);
-     
 
         tvEpisodeRating.setStyle("-fx-alignment: CENTER;");
         tvEpisodeStars.setStyle("-fx-alignment: CENTER;");
@@ -728,7 +725,7 @@ public class GraphicUserInterface {
             };
             return cell;
         });
-       
+
         tvEpisodeRating.setPrefWidth(110);
         tvEpisodeStars.setPrefWidth(120);
         tvEpisodeName.prefWidthProperty().bind(tvShowList.widthProperty().add(-tvShowStars.getPrefWidth()).add(-tvShowRating.getPrefWidth()).add(-tvShowWatching.getPrefWidth()).add(-15));
@@ -740,7 +737,6 @@ public class GraphicUserInterface {
         tvEpisodeStars.setCellValueFactory(
                 new PropertyValueFactory<>("stars"));
 
-        
         tvEpisodeList.getColumns().addAll(tvEpisodeName, tvEpisodeRating, tvEpisodeStars);
 
     }
@@ -978,12 +974,7 @@ public class GraphicUserInterface {
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonAddButton = (ActionEvent event) -> {
-<<<<<<< HEAD
         Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false);
-=======
-        Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false, "");
->>>>>>> 91f6490d2db14562c02329f69b0c052d0f440e09
-        result.setRatingMPAA(currentTV_Show.getRatingMPAA());
         currentTV_Show.getSeasons().add(result);
         tvSeasonList.getItems().clear();
         tvSeasonList.getItems().addAll(currentTV_Show.getSeasons());
