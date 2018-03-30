@@ -10,21 +10,22 @@ import java.util.Objects;
  */
 public class TV_Show implements java.io.Serializable {
 
-    private static final long serialVersionUID = 5207101937016083734L;
+    private static final long serialVersionUID = -3867959625463836721L;
 
     private String name;
     private RatingMPAA ratingMPAA;
     private String comments;
     private int stars;
     private List<Season> seasons;
+    private int totalEps;
 
     private boolean watching;
 
-    public TV_Show(String name, int stars, RatingMPAA ratingMPAA, boolean watching, String comments) {
+    public TV_Show(String name, RatingMPAA ratingMPAA, boolean watching, String comments) {
         this.name = name;
         this.ratingMPAA = ratingMPAA;
         this.comments = comments;
-        this.stars = stars;
+        this.stars = 0;
         this.watching = watching;
         this.seasons = new ArrayList<>();
     }
@@ -61,8 +62,30 @@ public class TV_Show implements java.io.Serializable {
         return stars;
     }
 
-    public void setStars(int stars) {
+    public int getTotalEps() {
+        return totalEps;
+    }
+
+    private void setTotalEps(int totalEps) {
+        this.totalEps = totalEps;
+    }
+
+    private void setStars(int stars) {
         this.stars = stars;
+    }
+
+    public void update() {
+        getSeasons().forEach(season -> season.updateStars());
+        float sum = 0;
+        float eps = 0;
+        for (int i = 0; i < this.getSeasons().size(); i++) {
+            for (int j = 0; j < this.getSeasons().get(i).getEpisodes().size(); j++) {
+                sum += this.getSeasons().get(i).getEpisodes().get(j).getStars();
+                eps++;
+            }
+        }
+        setTotalEps((int) eps);
+        setStars(Math.round(sum / eps));
     }
 
     public boolean isWatching() {

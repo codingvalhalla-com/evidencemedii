@@ -294,7 +294,6 @@ public class GraphicUserInterface {
         textAreaT.prefWidth(160);
         textAreaT.prefHeightProperty().bind(movieList.heightProperty().add(-25 - 25 - 25));
         rightStageVBoxT.getChildren().addAll(labelT, seasons, episodes, comments);
-        rightStageVBoxT.setVisible(false);
 
         pane.getChildren().addAll(rightStageVBoxM, rightStageVBoxT);
         return pane;
@@ -767,9 +766,7 @@ public class GraphicUserInterface {
         });
 
         tvShowList.getSelectionModel().selectedItemProperty().addListener((ObservableValue<? extends TV_Show> observable, TV_Show oldValue, TV_Show newValue) -> {
-            textAreaT.setText(newValue != null ? newValue.getComments() : "");
-            seasonsField.setText(newValue != null ? Integer.toString(newValue.getSeasons().size()) : "");
-            episodesField.setText(newValue != null ? "Not implemented..." : "");
+            updateTvComments(newValue);
         });
 
         tvShowList.setOnMouseClicked((event) -> {
@@ -858,6 +855,9 @@ public class GraphicUserInterface {
         movieList.visibleProperty().bind(buttonMovie.selectedProperty());
         tvShowPane.visibleProperty().bind(buttonTVShow.selectedProperty());
 
+        rightStageVBoxM.visibleProperty().bind(buttonMovie.selectedProperty());
+        rightStageVBoxT.visibleProperty().bind(buttonTVShow.selectedProperty());
+
     }
 
     private void initRadioButtons() {
@@ -888,7 +888,7 @@ public class GraphicUserInterface {
         add.setTitle("Add movie");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
-        dialogPane.getStyleClass().add("add-dialog");
+        dialogPane.getStyleClass().add("dialog");
         add.show();
         add.afterShow();
         add.resultProperty().addListener((observable, oldValue, newValue) -> {
@@ -916,8 +916,9 @@ public class GraphicUserInterface {
         edit.resultProperty().addListener((observable, oldValue, newValue) -> {
             saved = false;
             movieList.refresh();
+            updateMovieComment(movieList.getSelectionModel().getSelectedItem());
         });
-        updateMovieComment(movieList.getSelectionModel().getSelectedItem());
+
     };
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -934,14 +935,13 @@ public class GraphicUserInterface {
         add.setTitle("Add TV show");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
-        dialogPane.getStyleClass().add("add-dialog");
+        dialogPane.getStyleClass().add("dialog");
         add.show();
-        add.afterShow();
         add.resultProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 tvShowList.getItems().add(newValue);
                 saved = false;
-                tvShowList.refresh();
+                updateLists();
             } catch (Exception e) {
                 StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
             }
@@ -957,30 +957,36 @@ public class GraphicUserInterface {
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
         dialogPane.getStyleClass().add("edit-dialog");
         edit.show();
-        edit.afterShow();
         edit.resultProperty().addListener((observable, oldValue, newValue) -> {
             saved = false;
-            tvShowList.refresh();
+            updateTvComments(tvShowList.getSelectionModel().getSelectedItem());
+            x.getSeasons().forEach(season -> {
+                season.setRatingMPAA(x.getRatingMPAA());
+                season.getEpisodes().forEach(episode -> episode.setRatingMPAA(season.getRatingMPAA()));
+            });
+            updateLists();
         });
+
     };
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVShowRemoveButton = (ActionEvent event) -> {
         TV_Show x = tvShowList.getSelectionModel().getSelectedItem();
         tvShowList.getItems().remove(x);
-        tvShowList.refresh();
+        updateLists();
         saved = false;
     };
 
     @SuppressWarnings("FieldMayBeFinal")
     private EventHandler<ActionEvent> handlerTVSeasonAddButton = (ActionEvent event) -> {
-        Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), 0, false);
+        Season result = new Season("Season " + (currentTV_Show.getSeasons().size() + 1), false);
         result.setRatingMPAA(currentTV_Show.getRatingMPAA());
         currentTV_Show.getSeasons().add(result);
         tvSeasonList.getItems().clear();
         tvSeasonList.getItems().addAll(currentTV_Show.getSeasons());
+        updateTvComments(currentTV_Show);
         saved = false;
-        tvSeasonList.refresh();
+        updateLists();
     };
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -991,12 +997,10 @@ public class GraphicUserInterface {
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
         dialogPane.getStyleClass().add("edit-dialog");
         edit.show();
-        edit.afterShow();
         edit.resultProperty().addListener((observable, oldValue, newValue) -> {
             saved = false;
             movieList.refresh();
         });
-        updateMovieComment(movieList.getSelectionModel().getSelectedItem());
     };
 
     @SuppressWarnings("FieldMayBeFinal")
@@ -1008,7 +1012,8 @@ public class GraphicUserInterface {
             tvSeasonList.getItems().addAll(currentTV_Show.getSeasons());
             saved = false;
         }
-        tvSeasonList.refresh();
+        updateLists();
+        updateTvComments(currentTV_Show);
 
     };
 
@@ -1018,18 +1023,18 @@ public class GraphicUserInterface {
         add.setTitle("Add episode");
         DialogPane dialogPane = add.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
-        dialogPane.getStyleClass().add("add-dialog");
+        dialogPane.getStyleClass().add("dialog");
         add.show();
         add.afterShow();
         add.resultProperty().addListener((observable, oldValue, newValue) -> {
             try {
                 newValue.setRatingMPAA(currentSeason.getRatingMPAA());
                 currentSeason.getEpisodes().add(newValue);
-
                 saved = false;
                 tvEpisodeList.getItems().clear();
                 tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
-                tvEpisodeList.refresh();
+                updateLists();
+                updateTvComments(currentTV_Show);
             } catch (Exception e) {
                 StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
             }
@@ -1043,18 +1048,15 @@ public class GraphicUserInterface {
         edit.setTitle("Edit episode");
         DialogPane dialogPane = edit.getDialogPane();
         dialogPane.getStylesheets().add(getClass().getResource("valhalla.css").toExternalForm());
-        dialogPane.getStyleClass().add("add-dialog");
+        dialogPane.getStyleClass().add("dialog");
         edit.show();
         edit.afterShow();
         edit.resultProperty().addListener((observable, oldValue, newValue) -> {
             try {
-                newValue.setRatingMPAA(currentSeason.getRatingMPAA());
-                currentSeason.getEpisodes().add(newValue);
-
                 saved = false;
                 tvEpisodeList.getItems().clear();
                 tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
-                tvEpisodeList.refresh();
+                updateLists();
             } catch (Exception e) {
                 StaticAlerts.exceptionDialog(e, e.getLocalizedMessage(), mainStage);
             }
@@ -1067,7 +1069,8 @@ public class GraphicUserInterface {
         currentSeason.getEpisodes().remove(x);
         tvEpisodeList.getItems().clear();
         tvEpisodeList.getItems().addAll(currentSeason.getEpisodes());
-        tvEpisodeList.refresh();
+        updateLists();
+        updateTvComments(currentTV_Show);
         saved = false;
     };
 
@@ -1132,7 +1135,7 @@ public class GraphicUserInterface {
                 TV_Show temp = (TV_Show) in.readObject();
                 tvShowList.getItems().add(temp);
             }
-            tvShowList.refresh();
+            tvEpisodeList.refresh();
             saved = in.readBoolean();
             if (tvShowPane.getTabs().size() != 1) {
                 closeTabSeason();
@@ -1166,5 +1169,24 @@ public class GraphicUserInterface {
         } else {
             textAreaM.setText("");
         }
+    }
+
+    private void updateLists() {
+        tvEpisodeList.refresh();
+        tvSeasonList.refresh();
+        tvShowList.refresh();
+        tvShowList.getItems().forEach((show) -> {
+            show.update();
+        });
+
+    }
+
+    private void updateTvComments(TV_Show newValue) {
+        if (newValue != null) {
+            newValue.update();
+        }
+        textAreaT.setText(newValue != null ? newValue.getComments() : "");
+        seasonsField.setText(newValue != null ? Integer.toString(newValue.getSeasons().size()) : "");
+        episodesField.setText(newValue != null ? Integer.toString(newValue.getTotalEps()) : "");
     }
 }

@@ -1,6 +1,5 @@
 package com.codingvalhalla.meredith.evidence.gui.dialogs;
 
-import com.codingvalhalla.meredith.evidence.gui.GraphicUserInterface;
 import com.codingvalhalla.meredith.evidence.model.RatingMPAA;
 import com.codingvalhalla.meredith.evidence.model.Season;
 import com.codingvalhalla.meredith.evidence.utils.StaticAlerts;
@@ -16,16 +15,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -50,11 +43,6 @@ public class DialogTVSeason extends Dialog<Season> {
     private Season selectedItem;
 
     private TextField name;
-    private Slider stars;
-    private ImageView starsImage;
-    private Pane starsImageGroup;
-    private Label starsLabel;
-    private Pane starsThumb;
 
     private Button buttonOK;
     private Button buttonCancel;
@@ -81,14 +69,6 @@ public class DialogTVSeason extends Dialog<Season> {
         addValues();
     }
 
-    public void afterShow() {
-        this.stars.layout();
-        this.starsThumb = (Pane) stars.lookup(".thumb");
-        starsThumb.setBackground(Background.EMPTY);
-        starsThumb.getChildren().clear();
-        starsThumb.getChildren().addAll(starsLabel);
-    }
-
     private void init() {
         this.rootLayout = new BorderPane();
         this.rootGrid = new GridPane();
@@ -96,11 +76,6 @@ public class DialogTVSeason extends Dialog<Season> {
         this.buttonOK = new Button("OK");
         this.buttonCancel = new Button("Cancel");
         this.name = new TextField();
-        this.stars = new Slider(1, 11, 1);
-        this.starsImage = new ImageView(new Image(GraphicUserInterface.getResources() + "images/stars0.png", 110, 20, false, true));
-        this.starsLabel = new Label();
-        this.starsImageGroup = new Pane(starsImage, stars);
-
     }
 
     private void addToLayout() {
@@ -135,11 +110,6 @@ public class DialogTVSeason extends Dialog<Season> {
         name.setPromptText("Enter name of movie.");
         name.setPrefWidth(200);
 
-        starsImage.setFitWidth(110);
-        stars.setPrefSize(125, 20);
-        starsImage.setLayoutX(7);
-        starsImage.setLayoutY(5);
-
         rootGrid.setHgap(10.0);
         rootGrid.setVgap(5.0);
         rootGrid.setPadding(new Insets(5, 15, 5, 15));
@@ -159,8 +129,6 @@ public class DialogTVSeason extends Dialog<Season> {
 
     private void initGrid() {
         rootGrid.addRow(0, new Label("Name:"), name);
-        rootGrid.addRow(1, new Label("Rating:"), starsImageGroup);
-
     }
 
     private boolean isValid() {
@@ -183,8 +151,6 @@ public class DialogTVSeason extends Dialog<Season> {
     private EventHandler<ActionEvent> dialogOKEvent = (ActionEvent event) -> {
         if (isValid()) {
             selectedItem.setName(name.getText());
-            selectedItem.setStars((int) stars.getValue() - 1);
-
             setResult(selectedItem);
         }
 
@@ -196,19 +162,12 @@ public class DialogTVSeason extends Dialog<Season> {
     };
 
     private void initListers() {
-        stars.valueProperty().addListener((observable, oldValue, newValue) -> {
-            int value = newValue.intValue() - 1;
-            starsImage.setImage(new Image(GraphicUserInterface.getResources() + "images/stars" + value + ".png", 110, 20, false, true));
-            stars.setValue(Math.round(newValue.doubleValue()));
-        });
-        starsLabel.textProperty().set("");
         buttonOK.setOnAction(dialogOKEvent);
         buttonCancel.setOnAction(dialogCancelEvent);
     }
 
     private void addValues() {
         name.setText(selectedItem.getName());
-        stars.setValue(selectedItem.getStars());
 
     }
 

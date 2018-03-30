@@ -33,7 +33,7 @@
     -fx-background-color: #0093ff;
 }
 
-.add-dialog .slider .track,.edit-dialog .slider .track{
+.dialog .slider .track,.edit-dialog .slider .track{
     -fx-background-color:transparent;
 }
 .tab-pane{

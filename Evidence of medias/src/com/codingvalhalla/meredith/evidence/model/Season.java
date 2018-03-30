@@ -18,9 +18,9 @@ public class Season implements java.io.Serializable {
     private List<Episode> episodes;
     private boolean watching;
 
-    public Season(String name, int stars, boolean watching) {
+    public Season(String name, boolean watching) {
         this.name = name;
-        this.stars = stars;
+        this.stars = 0;
         this.watching = watching;
         this.episodes = new ArrayList<>();
 
@@ -50,8 +50,16 @@ public class Season implements java.io.Serializable {
         return stars;
     }
 
-    public void setStars(int stars) {
+    private void setStars(int stars) {
         this.stars = stars;
+    }
+
+    public void updateStars() {
+        float sum = 0;
+        for (int j = 0; j < getEpisodes().size(); j++) {
+            sum += getEpisodes().get(j).getStars();
+        }
+        setStars(Math.round(sum / getEpisodes().size()));
     }
 
     public boolean isWatching() {
@@ -61,6 +69,8 @@ public class Season implements java.io.Serializable {
     public void setWatching(boolean watching) {
         this.watching = watching;
     }
+
+ 
 
     @Override
     public int hashCode() {
